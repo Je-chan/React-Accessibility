@@ -30,24 +30,32 @@ const createCellElement = (cell) => {
 
 const drawSheet = () => {
   for (let i = 0; i < spreadSheet.length; i++) {
+    // Row 를 열개씩 넣기
+    const rowContainerElement = document.createElement("div");
+    rowContainerElement.className = "row-container";
+
     for (let j = 0; j < spreadSheet[i].length; j++) {
       const cell = spreadSheet[i][j];
-      spreadSheetcontainer.append(createCellElement(cell));
+      rowContainerElement.append(createCellElement(cell));
     }
+
+    spreadSheetcontainer.append(rowContainerElement);
   }
 };
 
 const initSpreadSheet = () => {
-  for (let col = 0; col < COLS; col++) {
-    const rows = [];
-    for (let row = 0; row < ROWS; row++) {
-      const cell = new Cell(false, false, `${col}-${row}`, col, row, false);
-      rows.push(cell);
+  for (let row = 0; row < ROWS; row++) {
+    const cols = [];
+    for (let col = 0; col < COLS; col++) {
+      let cellData = "";
+      if (col === 0) cellData = row || "";
+      if (row === 0) cellData = col ? String.fromCharCode(64 + col) : "";
+      const cell = new Cell(false, false, cellData, row, col, false);
+      cols.push(cell);
     }
-    spreadSheet.push(rows);
+    spreadSheet.push(cols);
   }
   drawSheet();
-  console.log(spreadSheet);
 };
 
 initSpreadSheet();
