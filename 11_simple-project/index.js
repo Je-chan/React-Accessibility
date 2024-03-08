@@ -93,9 +93,40 @@ const handleCellClick = (cell) => {
 
   columnHeaderElement.classList.add("active");
   rowHeaderElement.classList.add("active");
+
+  document.querySelector("#current-cell").innerHTML =
+    cell.columnName + cell.rowName;
 };
 
+const handleOnChange = (data, cell) => {
+  cell.data = data;
+};
 
+const exportButton = document.querySelector("#export-button");
+const getCsvDataBySpreadSheet = (spreadSheet) => {
+  return spreadSheet.reduce(
+    (csvData, row, i) =>
+      i !== 0
+        ? csvData
+        : csvData +
+          row
+            .filter((column) => !column.isHeader)
+            .map((column) => column.data)
+            .join(",") +
+          "\r\n",
+    "",
+  );
+};
+const handleButtonClick = (e) => {
+  const csvData = getCsvDataBySpreadSheet(spreadSheet);
+  const csvObj = new Blob([csvData], { type: "text/plain" });
+  const csvUrl = URL.createObjectURL(csvObj);
+  const a = document.createElement("a");
+  a.href = csvUrl;
+  a.download = "spreadsheet name.csv";
+  a.click();
+};
+exportButton.onclick = handleButtonClick;
 
 /**
  * Cell 클래스를 활용해서 Element 생성하는 함수
@@ -119,6 +150,7 @@ const createCellElement = (cell) => {
 
   // Cell 엘리먼트의 이벤트 등록
   cellElement.onclick = () => handleCellClick(cell);
+  cellElement.onchange = (e) => handleOnChange(e.target.value, cell);
 
   return cellElement;
 };
